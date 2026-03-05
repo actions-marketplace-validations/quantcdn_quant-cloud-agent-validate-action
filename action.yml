@@ -1,0 +1,45 @@
+name: 'Quant Agent Validate'
+description: 'Validate AI agent output against a quality spec using the Quant validation API'
+branding:
+  icon: 'check-circle'
+  color: 'blue'
+inputs:
+  quant_api_key:
+    description: 'Quant API key'
+    required: true
+  quant_organization:
+    description: 'Quant organisation name'
+    required: true
+  agent_id:
+    description: 'Agent UUID to validate'
+    required: true
+  agent_output:
+    description: 'JSON string of the agent tool call output'
+    required: true
+  validation_spec:
+    description: 'Path to validation spec JSON file, or inline JSON string'
+    required: true
+  conversation_context:
+    description: 'JSON string of conversation context (tool calls, message count)'
+    required: false
+  test_fixtures:
+    description: 'Path to JSON file with test fixture state'
+    required: false
+  git_sha:
+    description: 'Git SHA that triggered this validation (auto-detected if not set)'
+    required: false
+  base_url:
+    description: 'Quant API base URL'
+    required: false
+outputs:
+  score:
+    description: 'Quality score (0.0-1.0)'
+  passed:
+    description: 'Whether validation passed (true/false)'
+  report:
+    description: 'Full QualityReport JSON'
+  summary:
+    description: 'Human-readable summary string'
+runs:
+  using: 'node20'
+  main: 'dist/index.js'
