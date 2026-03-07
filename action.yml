@@ -15,7 +15,13 @@ inputs:
     required: true
   agent_output:
     description: 'JSON string of the agent tool call output'
-    required: true
+    required: false
+  agent_output_file:
+    description: 'Path to JSON file containing agent output (alternative to agent_output for large responses)'
+    required: false
+  conversation_context_file:
+    description: 'Path to JSON file containing conversation context'
+    required: false
   validation_spec:
     description: 'Path to validation spec JSON file, or inline JSON string'
     required: true

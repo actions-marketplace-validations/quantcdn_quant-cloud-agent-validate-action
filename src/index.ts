@@ -14,9 +14,11 @@ async function run(): Promise<void> {
     const apiKey = core.getInput('quant_api_key', { required: true });
     const organization = core.getInput('quant_organization', { required: true });
     const agentId = core.getInput('agent_id', { required: true });
-    const agentOutputRaw = core.getInput('agent_output', { required: true });
+    const agentOutputRaw = core.getInput('agent_output');
+    const agentOutputFile = core.getInput('agent_output_file');
     const validationSpecRaw = core.getInput('validation_spec', { required: true });
     const conversationContextRaw = core.getInput('conversation_context') || '{}';
+    const conversationContextFile = core.getInput('conversation_context_file');
     const testFixturesPath = core.getInput('test_fixtures');
     const gitSha = core.getInput('git_sha') || process.env.GITHUB_SHA || '';
     const baseUrl = core.getInput('base_url') || DEFAULT_BASE_URL;
@@ -26,14 +28,27 @@ async function run(): Promise<void> {
     let testFixtures: Record<string, any> = {};
 
     try {
-      agentOutput = JSON.parse(agentOutputRaw);
-    } catch {
-      core.setFailed('Failed to parse agent_output as JSON');
+      if (agentOutputFile) {
+        const fileContent = fs.readFileSync(agentOutputFile, 'utf-8');
+        agentOutput = JSON.parse(fileContent);
+      } else if (agentOutputRaw) {
+        agentOutput = JSON.parse(agentOutputRaw);
+      } else {
+        core.setFailed('Either agent_output or agent_output_file must be provided');
+        return;
+      }
+    } catch (err) {
+      core.setFailed(`Failed to parse agent output: ${err}`);
       return;
     }
 
     try {
-      conversationContext = JSON.parse(conversationContextRaw);
+      if (conversationContextFile) {
+        const fileContent = fs.readFileSync(conversationContextFile, 'utf-8');
+        conversationContext = JSON.parse(fileContent);
+      } else {
+        conversationContext = JSON.parse(conversationContextRaw);
+      }
     } catch {
       conversationContext = {};
     }
